@@ -146,6 +146,12 @@
   <ItemGroup>
     <Text Include="config.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Components.hpp" />
+    <ClInclude Include="Entity.hpp" />
+    <ClInclude Include="Entity_Manager.hpp" />
+    <ClInclude Include="Vec2.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
