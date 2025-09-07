@@ -54,6 +54,7 @@ void GameEngine::run()
 
 		sRender();
 		sUserInput();
+		sMovement();
 
 		mWindow.display();
 	}
@@ -70,6 +71,53 @@ void GameEngine::sRender()
 		shape.setPosition(transform);
 
 		mWindow.draw(shape);
+	}
+}
+
+void GameEngine::sMovement()
+{
+	if (!player())
+	{
+		return;
+	}
+
+	auto& playerInput = player()->get<CInput>();
+	auto& playerMovement = player()->get<CTransform>();
+	auto& playerCollisionRadius = player()->get<CCollision>().radius;
+	auto windowSize = mWindow.getSize();
+
+	playerMovement.velocity.x = 0;
+	playerMovement.velocity.y = 0;
+
+	if (playerInput.right)
+	{
+		playerMovement.velocity.x = 5;
+	}
+
+	if (playerInput.left)
+	{
+		playerMovement.velocity.x = -5;
+	}
+
+	if (playerInput.up)
+	{
+		playerMovement.velocity.y = -5;
+	}
+
+	if (playerInput.down)
+	{
+		playerMovement.velocity.y = 5;
+	}
+
+
+	for (auto& entity : mEntities.getEntities())
+	{
+		if (entity->isActive())
+		{
+			auto& transform = entity->get<CTransform>();
+			transform.pos.x += transform.velocity.x;
+			transform.pos.y += transform.velocity.y;
+		}
 	}
 }
 
@@ -102,19 +150,15 @@ void GameEngine::sUserInput()
 			{
 			case sf::Keyboard::Scancode::D:
 				playerInput.right = true;
-				std::cout << playerInput.right << std::endl;
 				break;
 			case sf::Keyboard::Scancode::A:
 				playerInput.left = true;
-				std::cout << playerInput.left << std::endl;
 				break;
 			case sf::Keyboard::Scancode::W:
 				playerInput.up = true;
-				std::cout << playerInput.up << std::endl;
 				break;
 			case sf::Keyboard::Scancode::S:
 				playerInput.down = true;
-				std::cout << playerInput.down << std::endl;
 				break;
 			case sf::Keyboard::Scancode::Space:
 				setPaused(!mPaused);
@@ -132,19 +176,15 @@ void GameEngine::sUserInput()
 			{
 			case sf::Keyboard::Scancode::D:
 				playerInput.right = false;
-				std::cout << playerInput.right << std::endl;
 				break;
 			case sf::Keyboard::Scancode::A:
 				playerInput.left = false;
-				std::cout << playerInput.left << std::endl;
 				break;
 			case sf::Keyboard::Scancode::W:
 				playerInput.up = false;
-				std::cout << playerInput.up << std::endl;
 				break;
 			case sf::Keyboard::Scancode::S:
 				playerInput.down = false;
-				std::cout << playerInput.down << std::endl;
 				break;
 			default:
 				break;

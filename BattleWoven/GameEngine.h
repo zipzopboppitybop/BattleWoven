@@ -27,6 +27,7 @@ protected:
 	void spawnPlayer();
 	void sUserInput();
 	void setPaused(bool paused);
+	void sMovement();
 
 	std::shared_ptr<Entity> player();
 public:
