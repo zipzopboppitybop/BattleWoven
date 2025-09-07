@@ -1,6 +1,5 @@
 #include "GameEngine.h"
 
-
 int main() 
 {
     GameEngine g("config.txt");

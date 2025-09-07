@@ -33,12 +33,17 @@ void GameEngine::init(const std::string& path)
 	spawnPlayer();
 }
 
+void GameEngine::setPaused(bool paused)
+{
+	mPaused = paused;
+}
+
 void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2));
 	player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
-	std::cout << mEntities.getEntities().size();
+	player->add<CInput>();
 }
 
 void GameEngine::run()
@@ -47,13 +52,8 @@ void GameEngine::run()
 	{
 		mEntities.update();
 
-		while (const auto event = mWindow.pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
-				mRunning = false;
-				mWindow.close();
-			}
-		}
 		sRender();
+		sUserInput();
 
 		mWindow.display();
 	}
@@ -73,7 +73,96 @@ void GameEngine::sRender()
 	}
 }
 
+void GameEngine::sUserInput()
+{
+	while (const std::optional event = mWindow.pollEvent())
+	{
+		ImGui::SFML::ProcessEvent(mWindow, *event);
+
+		if (event->is<sf::Event::Closed>())
+		{
+			mWindow.close();
+		}
+
+		if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard)
+		{
+			continue;
+		}
+
+		if (!player())
+		{
+			return;
+		}
+
+		auto& playerInput = player()->get<CInput>();
+
+		if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+		{
+			switch (keyPressed->scancode)
+			{
+			case sf::Keyboard::Scancode::D:
+				playerInput.right = true;
+				std::cout << playerInput.right << std::endl;
+				break;
+			case sf::Keyboard::Scancode::A:
+				playerInput.left = true;
+				std::cout << playerInput.left << std::endl;
+				break;
+			case sf::Keyboard::Scancode::W:
+				playerInput.up = true;
+				std::cout << playerInput.up << std::endl;
+				break;
+			case sf::Keyboard::Scancode::S:
+				playerInput.down = true;
+				std::cout << playerInput.down << std::endl;
+				break;
+			case sf::Keyboard::Scancode::Space:
+				setPaused(!mPaused);
+				break;
+			//case sf::Keyboard::Scancode::Grave:
+			//	mShow_imgui = !mShow_imgui;
+			//	break;
+			default:
+				break;
+			}
+		}
+		else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
+		{
+			switch (keyReleased->scancode)
+			{
+			case sf::Keyboard::Scancode::D:
+				playerInput.right = false;
+				std::cout << playerInput.right << std::endl;
+				break;
+			case sf::Keyboard::Scancode::A:
+				playerInput.left = false;
+				std::cout << playerInput.left << std::endl;
+				break;
+			case sf::Keyboard::Scancode::W:
+				playerInput.up = false;
+				std::cout << playerInput.up << std::endl;
+				break;
+			case sf::Keyboard::Scancode::S:
+				playerInput.down = false;
+				std::cout << playerInput.down << std::endl;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
 sf::RenderWindow& GameEngine::window()
 {
 	return mWindow;
+}
+
+std::shared_ptr<Entity> GameEngine::player()
+{
+	auto& players = mEntities.getEntities("player");
+	if (!players.empty())
+	{
+		return players.front();
+	}
+	return nullptr;
 }
