@@ -10,8 +10,11 @@
 
 int main() 
 {
-    // Shape Vector
-    std::vector<sf::RectangleShape> shapes;
+    EntityManager Entities;
+    auto player = Entities.addEntity("player");
+    player->add<CTransform>(Vec2f(500.0f, 500.0f));
+    player->add<CShape>(50.0f, 8, sf::Color::Blue, sf::Color::Blue, 1);
+    
     // Create a window with the given width and height
     const int wWidth = 1280;
     const int wHeight = 720;
@@ -61,12 +64,11 @@ int main()
 
         // clear window every frame to get rid of drawn shapes
         window.clear();
+        auto& shape = player->get<CShape>().circle;
+        auto& transform = player->get<CTransform>().pos;
+        shape.setPosition(transform);
+        window.draw(shape);
 
-        for (auto shape : shapes)
-        {
-            window.draw(shape);
-        }
-      
         // Draw ui last so it's on top
         ImGui::SFML::Render(window);
 
