@@ -29,30 +29,51 @@ void GameEngine::init(const std::string& path)
 
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
 	ImGui::GetIO().FontGlobalScale = 2.0f;
+
+	spawnPlayer();
+}
+
+void GameEngine::spawnPlayer()
+{
+	auto player = mEntities.addEntity("player");
+	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2));
+	player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
+	std::cout << mEntities.getEntities().size();
 }
 
 void GameEngine::run()
 {
-	sRender();
-}
-
-void GameEngine::sRender()
-{
-	while (mWindow.isOpen()) {
+	while (mRunning && mWindow.isOpen())
+	{
+		mEntities.update();
 
 		while (const auto event = mWindow.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
+				mRunning = false;
 				mWindow.close();
 			}
 		}
-
-		mWindow.clear();
+		sRender();
 
 		mWindow.display();
 	}
 }
 
-sf::Window& GameEngine::window()
+void GameEngine::sRender()
+{
+	mWindow.clear();
+
+	for (auto& entity : mEntities.getEntities())
+	{
+		auto& shape = entity->get<CShape>().circle;
+		auto& transform = entity->get<CTransform>().pos;
+		shape.setPosition(transform);
+
+		mWindow.draw(shape);
+	}
+}
+
+sf::RenderWindow& GameEngine::window()
 {
 	return mWindow;
 }

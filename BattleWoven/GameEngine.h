@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.hpp";
+#include "Entity.hpp"
 #include "Vec2.hpp"
 #include "Entity_Manager.hpp"
 #include <string>
@@ -17,14 +17,17 @@ class GameEngine
 protected:
 	sf::RenderWindow mWindow;
 	sf::Clock mDeltaClock;
+	EntityManager mEntities;
+	bool mRunning = true;
 	WindowConfig mWindowConfig;
 
 	void init(const std::string& path);
 	void sRender();
+	void spawnPlayer();
 
 public:
 	GameEngine(const std::string& path);
 
 	void run();
-	sf::Window& window();
+	sf::RenderWindow& window();
 };
