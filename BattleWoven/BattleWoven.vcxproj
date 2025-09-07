@@ -141,6 +141,7 @@
     <ClCompile Include="..\ImGui\Source\imgui_draw.cpp" />
     <ClCompile Include="..\ImGui\Source\imgui_tables.cpp" />
     <ClCompile Include="..\ImGui\Source\imgui_widgets.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +151,7 @@
     <ClInclude Include="Components.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Entity_Manager.hpp" />
+    <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Vec2.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
