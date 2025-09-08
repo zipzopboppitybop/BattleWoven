@@ -34,7 +34,7 @@ void GameEngine::init(const std::string& path)
 
 	mWindow.create(sf::VideoMode({ mWindowConfig.W, mWindowConfig.H }), "BattleWoven");
 	mWindow.setFramerateLimit(60);
-	mView.setSize({ (float)mWindowConfig.W, (float)mWindowConfig.H });
+	mView.setSize({ (float)mWindow.getSize().x, (float)mWindow.getSize().y });
 	mWindow.setView(mView);
 
 	ImGui::SFML::Init(mWindow);
