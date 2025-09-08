@@ -68,8 +68,8 @@ void GameEngine::run()
 	{
 		mEntities.update();
 
-		sRender();
 		sUserInput();
+		sRender();
 		sMovement();
 
 		mWindow.display();
@@ -92,7 +92,7 @@ void GameEngine::sRender()
 
 void GameEngine::sMovement()
 {
-	if (!player())
+	if (!player() || !player()->isActive())
 	{
 		return;
 	}
