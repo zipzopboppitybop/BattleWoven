@@ -21,7 +21,9 @@ protected:
 	EntityManager mEntities;
 	bool mPaused = false;
 	bool mRunning = true;
+	bool mShowImgui = true;
 	WindowConfig mWindowConfig;
+	int mCurrentFrame = 0;;
 
 	void init(const std::string& path);
 	void sRender();
@@ -29,6 +31,7 @@ protected:
 	void sUserInput();
 	void setPaused(bool paused);
 	void sMovement();
+	void sGui();
 
 	std::shared_ptr<Entity> player();
 public:

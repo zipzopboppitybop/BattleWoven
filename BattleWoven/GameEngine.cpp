@@ -68,11 +68,22 @@ void GameEngine::run()
 	{
 		mEntities.update();
 
-		sUserInput();
-		sRender();
-		sMovement();
+		ImGui::SFML::Update(mWindow, mDeltaClock.restart());
 
+		sUserInput();
+		sMovement();
+		sRender();
+		sGui();
+
+		mCurrentFrame++;
+
+		ImGui::SFML::Render(mWindow);
 		mWindow.display();
+		
+		if (!player())
+		{
+			spawnPlayer();
+		}
 	}
 }
 
@@ -99,8 +110,19 @@ void GameEngine::sMovement()
 
 	auto& playerInput = player()->get<CInput>();
 	auto& playerMovement = player()->get<CTransform>();
-	auto& playerCollisionRadius = player()->get<CCollision>().radius;
+	//auto& playerCollisionRadius = player()->get<CCollision>().radius;
 	auto windowSize = mWindow.getSize();
+
+
+	if (ImGui::GetIO().WantCaptureMouse)
+	{
+		playerInput.right = false;
+		playerInput.left = false;
+		playerInput.up = false;
+		playerInput.down = false;
+
+		return;
+	}
 
 	playerMovement.velocity.x = 0;
 	playerMovement.velocity.y = 0;
@@ -130,11 +152,9 @@ void GameEngine::sMovement()
 		if (entity->isActive())
 		{
 			auto& transform = entity->get<CTransform>();
-			transform.pos.x += transform.velocity.x;
-			transform.pos.y += transform.velocity.y;
+			transform.pos += transform.velocity;
 		}
 	}
-
 
 	mView.setCenter({ playerMovement.pos.x, playerMovement.pos.y });
 	mWindow.setView(mView);
@@ -211,6 +231,109 @@ void GameEngine::sUserInput()
 		}
 	}
 }
+
+void GameEngine::sGui()
+{
+	if (mShowImgui)
+	{
+		ImGui::Begin("BattleWoven");
+
+		if (ImGui::BeginTabBar("MyTabBar"))
+		{
+			//if (ImGui::BeginTabItem("Systems"))
+			//{
+			//	ImGui::Checkbox("Movement", &mMovement);
+			//	ImGui::Checkbox("Lifespan", &mLifespan);
+			//	ImGui::Checkbox("Collision", &mCollision);
+			//	ImGui::Checkbox("Spawning", &mSpawning);
+			//	ImGui::SliderInt("Spawn", &mEnemyConfig.SI, 2, 200);
+			//	if (ImGui::Button("Manual Spawn"))
+			//	{
+			//		spawnEnemy();
+			//	}
+			//	ImGui::Checkbox("GUI", &mShow_imgui);
+			//	ImGui::Checkbox("Rendering", &mRendering);
+
+			//	ImGui::EndTabItem();
+			//}
+			if (ImGui::BeginTabItem("Entities"))
+			{
+				if (ImGui::CollapsingHeader("Entities"))
+				{
+					auto enemies = mEntities.getEntities("enemy");
+					ImGui::Indent();
+					if (ImGui::TreeNode("Enemies"))
+					{
+						for (auto& enemy : enemies)
+						{
+							auto enemyColor = enemy->get<CShape>().circle.getFillColor();
+							auto enemyPos = enemy->get<CTransform>().pos;
+							int id = enemy->id();
+							const std::string& tag = enemy->tag();
+							float x = enemyPos.x, y = enemyPos.y;
+							ImGui::PushID(id);
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(enemyColor.r / 255.0f, enemyColor.g / 255.0f, enemyColor.b / 255.0f, 1.0f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(enemyColor.r / 255.0f, enemyColor.g / 255.0f, enemyColor.b / 255.0f, 0.8f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(enemyColor.r / 255.0f, enemyColor.g / 255.0f, enemyColor.b / 255.0f, 0.6f));
+							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+
+							if (ImGui::Button("D", ImVec2(36, 36)))
+							{
+								enemy->destroy();
+							}
+
+							ImGui::PopStyleColor(4);
+							ImGui::SameLine();
+							ImGui::Text("%d %s (%.0f, %.0f)", id, tag.c_str(), x, y);
+							ImGui::PopID();
+						}
+
+						ImGui::TreePop();
+					}
+					if (ImGui::TreeNode("Player"))
+					{
+						if (player())
+						{
+							auto playerColor = player()->get<CShape>().circle.getOutlineColor();
+							auto playerPos = player()->get<CTransform>().pos;
+							int id = player()->id();
+							const std::string& tag = player()->tag();
+							float x = playerPos.x, y = playerPos.y;
+
+							ImGui::PushID(id);
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 1.0f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 0.8f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 0.6f));
+							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+
+							if (ImGui::Button("D", ImVec2(36, 36)))
+							{
+								player()->destroy();
+							}
+
+							ImGui::PopStyleColor(4);
+							ImGui::SameLine();
+							ImGui::Text("%d %s (%.0f, %.0f)", id, tag.c_str(), x, y);
+							ImGui::PopID();
+						}
+
+						ImGui::TreePop();
+					}
+
+					ImGui::Unindent();
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
+
+		ImGui::End();
+	}
+}
+
+
 sf::RenderWindow& GameEngine::window()
 {
 	return mWindow;
