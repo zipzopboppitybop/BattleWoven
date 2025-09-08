@@ -17,6 +17,7 @@ class GameEngine
 protected:
 	sf::RenderWindow mWindow;
 	sf::Clock mDeltaClock;
+	sf::View mView;
 	EntityManager mEntities;
 	bool mPaused = false;
 	bool mRunning = true;

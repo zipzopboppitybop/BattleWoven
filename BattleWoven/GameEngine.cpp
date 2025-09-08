@@ -5,6 +5,16 @@ GameEngine::GameEngine(const std::string& path)
 	init(path);
 }
 
+std::shared_ptr<Entity> GameEngine::player()
+{
+	auto& players = mEntities.getEntities("player");
+	if (!players.empty())
+	{
+		return players.front();
+	}
+	return nullptr;
+}
+
 void GameEngine::init(const std::string& path)
 {
 	std::ifstream config(path);
@@ -24,14 +34,20 @@ void GameEngine::init(const std::string& path)
 
 	mWindow.create(sf::VideoMode({ mWindowConfig.W, mWindowConfig.H }), "BattleWoven");
 	mWindow.setFramerateLimit(60);
+	mView.setSize({ (float)mWindowConfig.W, (float)mWindowConfig.H });
+	mWindow.setView(mView);
 
 	ImGui::SFML::Init(mWindow);
 
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
 	ImGui::GetIO().FontGlobalScale = 2.0f;
 
+	auto enemy = mEntities.addEntity("enemy");
+	enemy->add<CTransform>(Vec2f(100.f, 100.f));
+	enemy->add<CShape>(100.f, 8, sf::Color::Red, sf::Color::Red, 5);
+
 	spawnPlayer();
-}
+}	
 
 void GameEngine::setPaused(bool paused)
 {
@@ -109,7 +125,6 @@ void GameEngine::sMovement()
 		playerMovement.velocity.y = 5;
 	}
 
-
 	for (auto& entity : mEntities.getEntities())
 	{
 		if (entity->isActive())
@@ -119,6 +134,10 @@ void GameEngine::sMovement()
 			transform.pos.y += transform.velocity.y;
 		}
 	}
+
+
+	mView.setCenter({ playerMovement.pos.x, playerMovement.pos.y });
+	mWindow.setView(mView);
 }
 
 void GameEngine::sUserInput()
@@ -197,12 +216,3 @@ sf::RenderWindow& GameEngine::window()
 	return mWindow;
 }
 
-std::shared_ptr<Entity> GameEngine::player()
-{
-	auto& players = mEntities.getEntities("player");
-	if (!players.empty())
-	{
-		return players.front();
-	}
-	return nullptr;
-}
