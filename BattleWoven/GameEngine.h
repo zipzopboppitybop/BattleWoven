@@ -25,6 +25,7 @@ protected:
 	WindowConfig mWindowConfig;
 	int mCurrentFrame = 0;;
 
+
 	void init(const std::string& path);
 	void sRender();
 	void spawnPlayer();
@@ -35,6 +36,9 @@ protected:
 
 	std::shared_ptr<Entity> player();
 public:
+
+	sf::Sprite mSprite;
+	sf::Texture texture;
 	GameEngine(const std::string& path);
 
 	void run();

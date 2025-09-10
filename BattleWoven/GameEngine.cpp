@@ -1,7 +1,12 @@
 #include "GameEngine.h"
 
-GameEngine::GameEngine(const std::string& path)
+GameEngine::GameEngine(const std::string& path) : mSprite(texture)
 {
+	if (!texture.loadFromFile("../BattleWoven/Assets/Textures/deut2b8-433cbf4e-8bab-40c7-8b85-fdd9ab846bc2.png")) {
+		std::cerr << "Failed to load texture!" << std::endl;
+	}
+	mSprite.setTexture(texture);
+
 	init(path);
 }
 
@@ -42,11 +47,15 @@ void GameEngine::init(const std::string& path)
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
 	ImGui::GetIO().FontGlobalScale = 2.0f;
 
+
 	auto enemy = mEntities.addEntity("enemy");
 	enemy->add<CTransform>(Vec2f(100.f, 100.f));
 	enemy->add<CShape>(100.f, 8, sf::Color::Red, sf::Color::Red, 5);
 
 	spawnPlayer();
+
+	mSprite.setTextureRect(sf::IntRect({ 300, 0 }, { 64, 128 }));
+	mSprite.setPosition({ 100.f, 50.f });
 }	
 
 void GameEngine::setPaused(bool paused)
@@ -99,6 +108,8 @@ void GameEngine::sRender()
 
 		mWindow.draw(shape);
 	}
+
+	mWindow.draw(mSprite);
 }
 
 void GameEngine::sMovement()
