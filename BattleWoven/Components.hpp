@@ -118,15 +118,20 @@ public:
 	CHealth(int health) : maxHealth(health), currentHealth(health) {}
 };
 
+struct Ability
+{
+	std::string name = "Default";
+	bool canUse = true;
+	int damage = 0;
+	int level = 1;
+	float cooldown = 0.0f;
+	float lastUsed = 0.0f;
+};
+
 class CAbility : public Component
 {
 public:
-	std::string name;
-	bool canUse = true;
-	int damage;
-	int level;
-	float cooldown;
+	std::vector<Ability> abilities;
 
 	CAbility() = default;
-	CAbility(std::string n, int d, int l, float c) : name(n), damage(d), level(l), cooldown(c) {}
 };
