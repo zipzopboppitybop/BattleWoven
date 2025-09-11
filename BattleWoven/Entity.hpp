@@ -13,7 +13,9 @@ using ComponentTuple = std::tuple<
 	CGravity,
 	CCollision,
 	CState,
-	CShape
+	CShape,
+	CHealth,
+	CAbility
 >;
 
 class Entity

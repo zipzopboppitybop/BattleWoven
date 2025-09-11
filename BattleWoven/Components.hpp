@@ -107,3 +107,26 @@ public:
 	CState() = default;
 	CState(const std::string& s) : state(s) {}
 };
+
+class CHealth : public Component
+{
+public:
+	int maxHealth;
+	int currentHealth;
+
+	CHealth() = default;
+	CHealth(int health) : maxHealth(health), currentHealth(health) {}
+};
+
+class CAbility : public Component
+{
+public:
+	std::string name;
+	bool canUse = true;
+	int damage;
+	int level;
+	float cooldown;
+
+	CAbility() = default;
+	CAbility(std::string n, int d, int l, float c) : name(n), damage(d), level(l), cooldown(c) {}
+};

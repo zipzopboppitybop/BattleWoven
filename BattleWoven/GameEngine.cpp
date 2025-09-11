@@ -69,6 +69,8 @@ void GameEngine::spawnPlayer()
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2));
 	player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
 	player->add<CInput>();
+	player->add<CAbility>("FireBall" , 60, 1, 3);
+	player->add<CHealth>(100);
 }
 
 void GameEngine::run()
