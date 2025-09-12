@@ -56,12 +56,15 @@ void GameEngine::run()
 {
 	while (mRunning && mWindow.isOpen())
 	{
+		float deltaTime = mDeltaClock.restart().asSeconds();
+
 		mEntities.update();
 
 		ImGui::SFML::Update(mWindow, mDeltaClock.restart());
 
 		sUserInput();
 		sMovement();
+		sAnimation(deltaTime);
 		sRender();
 		sGui();
 
@@ -77,17 +80,28 @@ void GameEngine::run()
 	}
 }
 
+void GameEngine::sAnimation(float deltaTime)
+{
+	for (auto& entity : mEntities.getEntities())
+	{
+		if (entity->has<CAnimation>())
+		{
+			entity->get<CAnimation>().animation->update(deltaTime);
+		}
+	}
+}
+
 void GameEngine::sRender()
 {
 	mWindow.clear();
 
 	for (auto& entity : mEntities.getEntities())
 	{
-		auto& shape = entity->get<CAnimation>().animation->sprite();
+		auto& shape = entity->get<CAnimation>().animation;
 		auto& transform = entity->get<CTransform>().pos;
-		shape.setPosition(transform);
+		shape->sprite().setPosition(transform);
 
-		mWindow.draw(shape);
+		mWindow.draw(shape->sprite());
 	}
 }
 

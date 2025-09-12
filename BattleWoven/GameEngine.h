@@ -30,6 +30,7 @@ protected:
 	void setPaused(bool paused);
 	void sMovement();
 	void sGui();
+	void sAnimation(float deltaTime);
 
 	std::shared_ptr<Entity> player();
 public:
