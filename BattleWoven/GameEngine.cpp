@@ -55,9 +55,7 @@ void GameEngine::spawnPlayer()
 	player->add<CAbility>();
 	player->add<CHealth>(100);
 
-	Ability fireball{ "Fireball", true, 25, 1, 2.0f };
-
-	player->get<CAbility>().abilities.push_back(fireball);
+	player->get<CAbility>().abilities.push_back(mAssets.mAbilitiesMap["Fireball"]);
 }
 
 void GameEngine::run()
