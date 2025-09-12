@@ -16,7 +16,7 @@ class Assets
 {
 
 public:
-	WindowConfig mWindowConfig;
+	WindowConfig mWindowConfig = {0,0};
 	std::map<std::string, sf::Texture> mTextureMap;
 	std::map<std::string, Ability> mAbilitiesMap;
 
