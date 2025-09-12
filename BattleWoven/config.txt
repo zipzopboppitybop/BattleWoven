@@ -1,4 +1,5 @@
 Window 1920 1080
 Font fonts/Roboto-Regular.ttf 18 255 255 255
-Texture MainGuy ../BattleWoven/Assets/Textures/MainGuySpriteSheet.png
+Texture Wizard ../BattleWoven/Assets/Textures/wizard.png
+Animation WizardWalking Wizard 0 90 64 88 8 .15
 Ability Fireball 100 1 3

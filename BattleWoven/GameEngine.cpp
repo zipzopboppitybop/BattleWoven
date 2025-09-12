@@ -36,9 +36,13 @@ void GameEngine::init(const std::string& path)
 
 	spawnPlayer();
 
-	mSprite.setTexture(mAssets.mTextureMap["Megaman"]);
-	mSprite.setTextureRect(sf::IntRect({ 300, 0 }, { 64, 128 }));
+	mSprite.setTexture(mAssets.mTextureMap["Wizard"]);
+	mSprite.setTextureRect(sf::IntRect({ 0, 90 }, { 64, 88}));
 	mSprite.setPosition({ 100.f, 50.f });
+
+	auto anim = mAssets.mAnimationMap.at("WizardWalking");
+
+	std::cout << anim.name();
 }	
 
 void GameEngine::setPaused(bool paused)

@@ -7,6 +7,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "Components.hpp"
+#include "Animation.hpp"
 
 struct Ability;
 
@@ -19,6 +20,7 @@ public:
 	WindowConfig mWindowConfig = {0,0};
 	std::map<std::string, sf::Texture> mTextureMap;
 	std::map<std::string, Ability> mAbilitiesMap;
+	std::map<std::string, Animation> mAnimationMap;
 
 	Assets() = default;
 
@@ -36,7 +38,16 @@ public:
 	{
 		Ability ability{ abilityName, true, damage, level, cooldown };
 
-		mAbilitiesMap[abilityName] = ability;
+		mAbilitiesMap.emplace(abilityName, std::move(ability));
+	}
+
+	void addAnimation(const std::string& animationName, const std::string& textureName, int x, int y, int width, int height, int frameCount, float frameTime)
+	{
+		sf::Texture texture = mTextureMap[textureName];
+
+		Animation anim(animationName, texture, Vec2f(x, y), Vec2f(width, height), frameCount, frameTime);
+
+		mAnimationMap.emplace(animationName,std::move(anim));
 	}
 
 	void loadFromFile(const std::string& path)
@@ -73,6 +84,17 @@ public:
 				config >> abilityName >> damage >> level >> cooldown;
 
 				addAbility(abilityName, damage, level, cooldown);
+			}
+
+			if (temp == "Animation")
+			{
+				std::string animationName, textureName;
+				int x, y, width, height, frameCount;
+				float frameTime;
+
+				config >> animationName >> textureName >> x >> y >> width >> height >> frameCount >> frameTime;
+
+				addAnimation(animationName, textureName, x, y, width, height, frameCount, frameTime);
 			}
 		}
 
