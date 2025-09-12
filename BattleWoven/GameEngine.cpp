@@ -39,10 +39,6 @@ void GameEngine::init(const std::string& path)
 	mSprite.setTexture(mAssets.mTextureMap["Wizard"]);
 	mSprite.setTextureRect(sf::IntRect({ 0, 90 }, { 64, 88}));
 	mSprite.setPosition({ 100.f, 50.f });
-
-	auto anim = mAssets.mAnimationMap.at("WizardWalking");
-
-	std::cout << anim.name();
 }	
 
 void GameEngine::setPaused(bool paused)
@@ -53,8 +49,9 @@ void GameEngine::setPaused(bool paused)
 void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
+	player->add<CAnimation>(std::move(mAssets.mAnimationMap.at("WizardWalking")));
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2));
-	player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
+	//player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
 	player->add<CInput>();
 	player->add<CAbility>();
 	player->add<CHealth>(100);
@@ -100,6 +97,10 @@ void GameEngine::sRender()
 		mWindow.draw(shape);
 	}
 
+	auto& sprite = player()->get<CAnimation>().animation->sprite();
+	auto& playerTransform = player()->get<CTransform>();
+	sprite.setPosition(playerTransform.pos);
+	mWindow.draw(sprite);
 	mWindow.draw(mSprite);
 }
 

@@ -2,6 +2,7 @@
 
 #include "Vec2.hpp"
 #include "SFML/Graphics.hpp"
+#include "Animation.hpp"
 
 class Component
 {
@@ -134,4 +135,16 @@ public:
 	std::vector<Ability> abilities;
 
 	CAbility() = default;
+};
+
+class CAnimation : public Component
+{
+public:
+	std::unique_ptr<Animation> animation;
+
+	CAnimation() = default;
+
+	CAnimation(std::unique_ptr<Animation> anim)
+		: animation(std::move(anim)) {
+	}
 };

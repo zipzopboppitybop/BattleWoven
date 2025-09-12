@@ -14,6 +14,7 @@ class Animation {
     const std::string mName;
 
 public:
+    Animation() = default;
     Animation(const std::string& animationName, const sf::Texture& texture, Vec2f pos, Vec2f size, int frameCount, float frameTime)
         : mName(animationName), mSprite(texture), mPos(pos), mFrameSize(size), mFrameCount(frameCount), mFrameTime(frameTime)
     {
@@ -24,5 +25,10 @@ public:
     const std::string& name()
     {
         return mName;
+    }
+
+    sf::Sprite& sprite()
+    {
+        return mSprite;
     }
 };

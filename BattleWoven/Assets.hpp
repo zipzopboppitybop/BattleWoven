@@ -20,7 +20,7 @@ public:
 	WindowConfig mWindowConfig = {0,0};
 	std::map<std::string, sf::Texture> mTextureMap;
 	std::map<std::string, Ability> mAbilitiesMap;
-	std::map<std::string, Animation> mAnimationMap;
+	std::map<std::string, std::unique_ptr<Animation>> mAnimationMap;
 
 	Assets() = default;
 
@@ -43,9 +43,9 @@ public:
 
 	void addAnimation(const std::string& animationName, const std::string& textureName, int x, int y, int width, int height, int frameCount, float frameTime)
 	{
-		sf::Texture texture = mTextureMap[textureName];
+		sf::Texture& texture = mTextureMap[textureName];
 
-		Animation anim(animationName, texture, Vec2f(x, y), Vec2f(width, height), frameCount, frameTime);
+		auto anim = std::make_unique<Animation>(animationName, texture, Vec2f(x, y), Vec2f(width, height), frameCount, frameTime);
 
 		mAnimationMap.emplace(animationName,std::move(anim));
 	}
