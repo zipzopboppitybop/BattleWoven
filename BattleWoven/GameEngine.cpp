@@ -2,11 +2,6 @@
 
 GameEngine::GameEngine(const std::string& path) : mSprite(texture)
 {
-	if (!texture.loadFromFile("../BattleWoven/Assets/Textures/deut2b8-433cbf4e-8bab-40c7-8b85-fdd9ab846bc2.png")) {
-		std::cerr << "Failed to load texture!" << std::endl;
-	}
-	mSprite.setTexture(texture);
-
 	init(path);
 }
 
@@ -22,22 +17,9 @@ std::shared_ptr<Entity> GameEngine::player()
 
 void GameEngine::init(const std::string& path)
 {
-	std::ifstream config(path);
-	std::string temp;
+	mAssets.loadFromFile(path);
 
-	if (!config.is_open()) {
-		std::cerr << "Error opening file!" << std::endl;
-	}
-
-	while (config >> temp)
-	{
-		if (temp == "Window")
-		{
-			config >> mWindowConfig.W >> mWindowConfig.H;
-		}
-	}
-
-	mWindow.create(sf::VideoMode({ mWindowConfig.W, mWindowConfig.H }), "BattleWoven");
+	mWindow.create(sf::VideoMode({ mAssets.mWindowConfig.W, mAssets.mWindowConfig.H }), "BattleWoven");
 	mWindow.setFramerateLimit(60);
 	mView.setSize({ (float)mWindow.getSize().x, (float)mWindow.getSize().y });
 	mWindow.setView(mView);
@@ -54,6 +36,7 @@ void GameEngine::init(const std::string& path)
 
 	spawnPlayer();
 
+	mSprite.setTexture(mAssets.mTextureMap["Megaman"]);
 	mSprite.setTextureRect(sf::IntRect({ 300, 0 }, { 64, 128 }));
 	mSprite.setPosition({ 100.f, 50.f });
 }	
@@ -127,9 +110,7 @@ void GameEngine::sMovement()
 
 	auto& playerInput = player()->get<CInput>();
 	auto& playerMovement = player()->get<CTransform>();
-	//auto& playerCollisionRadius = player()->get<CCollision>().radius;
 	auto windowSize = mWindow.getSize();
-
 
 	if (ImGui::GetIO().WantCaptureMouse)
 	{

@@ -3,14 +3,10 @@
 #include "Entity.hpp"
 #include "Vec2.hpp"
 #include "Entity_Manager.hpp"
-#include <string>
-#include <iostream> 
-#include <fstream>
+#include "Assets.hpp"
 #include <SFML/Graphics.hpp>
 #include "imgui.h"
 #include "imgui-SFML.h"
-
-struct WindowConfig { unsigned int W, H; };
 
 class GameEngine
 {
@@ -19,10 +15,10 @@ protected:
 	sf::Clock mDeltaClock;
 	sf::View mView;
 	EntityManager mEntities;
+	Assets mAssets;
 	bool mPaused = false;
 	bool mRunning = true;
 	bool mShowImgui = true;
-	WindowConfig mWindowConfig;
 	int mCurrentFrame = 0;;
 
 

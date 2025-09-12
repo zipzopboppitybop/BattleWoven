@@ -148,6 +148,7 @@
     <Text Include="config.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets.hpp" />
     <ClInclude Include="Components.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="Entity_Manager.hpp" />
