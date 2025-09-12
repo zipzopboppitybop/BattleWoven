@@ -33,9 +33,6 @@ protected:
 
 	std::shared_ptr<Entity> player();
 public:
-
-	sf::Sprite mSprite;
-	sf::Texture texture;
 	GameEngine(const std::string& path);
 
 	void run();

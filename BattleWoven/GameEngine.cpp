@@ -1,6 +1,6 @@
 #include "GameEngine.h"
 
-GameEngine::GameEngine(const std::string& path) : mSprite(texture)
+GameEngine::GameEngine(const std::string& path) 
 {
 	init(path);
 }
@@ -29,16 +29,7 @@ void GameEngine::init(const std::string& path)
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
 	ImGui::GetIO().FontGlobalScale = 2.0f;
 
-
-	auto enemy = mEntities.addEntity("enemy");
-	enemy->add<CTransform>(Vec2f(100.f, 100.f));
-	enemy->add<CShape>(100.f, 8, sf::Color::Red, sf::Color::Red, 5);
-
 	spawnPlayer();
-
-	mSprite.setTexture(mAssets.mTextureMap["Wizard"]);
-	mSprite.setTextureRect(sf::IntRect({ 0, 90 }, { 64, 88}));
-	mSprite.setPosition({ 100.f, 50.f });
 }	
 
 void GameEngine::setPaused(bool paused)
@@ -49,14 +40,16 @@ void GameEngine::setPaused(bool paused)
 void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
-	player->add<CAnimation>(std::move(mAssets.mAnimationMap.at("WizardWalking")));
+	player->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WizardWalking")));
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2));
-	//player->add<CShape>(100.f, 8, sf::Color::Blue, sf::Color::Blue, 5);
 	player->add<CInput>();
 	player->add<CAbility>();
 	player->add<CHealth>(100);
-
 	player->get<CAbility>().abilities.push_back(mAssets.mAbilitiesMap["Fireball"]);
+
+	auto enemy = mEntities.addEntity("enemy");
+	enemy->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WizardWalking")));
+	enemy->add<CTransform>(Vec2f(100.f, 100.f));
 }
 
 void GameEngine::run()
@@ -90,18 +83,12 @@ void GameEngine::sRender()
 
 	for (auto& entity : mEntities.getEntities())
 	{
-		auto& shape = entity->get<CShape>().circle;
+		auto& shape = entity->get<CAnimation>().animation->sprite();
 		auto& transform = entity->get<CTransform>().pos;
 		shape.setPosition(transform);
 
 		mWindow.draw(shape);
 	}
-
-	auto& sprite = player()->get<CAnimation>().animation->sprite();
-	auto& playerTransform = player()->get<CTransform>();
-	sprite.setPosition(playerTransform.pos);
-	mWindow.draw(sprite);
-	mWindow.draw(mSprite);
 }
 
 void GameEngine::sMovement()

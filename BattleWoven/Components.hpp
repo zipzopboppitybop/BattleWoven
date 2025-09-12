@@ -140,11 +140,7 @@ public:
 class CAnimation : public Component
 {
 public:
-	std::unique_ptr<Animation> animation;
-
+	Animation* animation = nullptr;
 	CAnimation() = default;
-
-	CAnimation(std::unique_ptr<Animation> anim)
-		: animation(std::move(anim)) {
-	}
+	CAnimation(Animation* anim) : animation(anim) {}
 };
