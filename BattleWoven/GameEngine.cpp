@@ -40,7 +40,7 @@ void GameEngine::setPaused(bool paused)
 void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
-	player->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("StandingDown")));
+	player->add<CAnimation>(mAssets.mAnimationMap.at("StandingDown").get());
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(5,5), Vec2f(3.0f, 3.0f), 1);
 	player->add<CInput>();
 	player->add<CAbility>();
@@ -57,7 +57,7 @@ void GameEngine::run()
 
 		mEntities.update();
 
-		ImGui::SFML::Update(mWindow, mDeltaClock.restart());
+		ImGui::SFML::Update(mWindow, sf::seconds(deltaTime));
 
 		sUserInput();
 		sMovement();
@@ -77,14 +77,24 @@ void GameEngine::run()
 	}
 }
 
-void GameEngine::sAnimation(float deltaTime)
+void GameEngine::sAnimation(float deltaTime) 
 {
-	for (auto& entity : mEntities.getEntities())
+	for (auto& entity : mEntities.getEntities()) 
 	{
-		if (entity->has<CAnimation>())
+		if (!entity->has<CAnimation>()) continue;
+
+		auto& anim = entity->get<CAnimation>();
+
+		if (!anim.prototype) continue;
+
+		anim.state.elapsed += deltaTime;
+		if (anim.state.elapsed >= anim.prototype->frameTime()) 
 		{
-			entity->get<CAnimation>().animation->update(deltaTime);
+			anim.state.elapsed -= anim.prototype->frameTime();
+			anim.state.currentFrame = (anim.state.currentFrame + 1) % anim.prototype->frameCount();
 		}
+
+		anim.prototype->setFrame(anim.state.currentFrame);
 	}
 }
 
@@ -94,12 +104,16 @@ void GameEngine::sRender()
 
 	for (auto& entity : mEntities.getEntities())
 	{
-		auto& shape = entity->get<CAnimation>().animation;
-		auto& transform = entity->get<CTransform>();
-		shape->sprite().setPosition(transform.pos);
-		shape->sprite().setScale(transform.scale);
+		if (!entity->has<CAnimation>() || !entity->has<CTransform>()) continue;
 
-		mWindow.draw(shape->sprite());
+		auto& anim = entity->get<CAnimation>();
+		auto& transform = entity->get<CTransform>();
+
+		sf::Sprite sprite = anim.prototype->sprite();
+		sprite.setPosition(transform.pos);
+		sprite.setScale(transform.scale);
+
+		mWindow.draw(sprite);
 	}
 }
 
@@ -180,9 +194,11 @@ void GameEngine::sUserInput()
 		{
 			return;
 		}
+		
 
 		auto& playerInput = player()->get<CInput>();
 		auto& playerState = player()->get<CState>();
+		auto& anim = player()->get<CAnimation>(); 
 
 		if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
 		{
@@ -192,36 +208,37 @@ void GameEngine::sUserInput()
 				playerInput.right = true;
 				if (playerState.state != "Walking Right") {
 					playerState.state = "Walking Right";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingRight")));
+					anim.prototype = mAssets.mAnimationMap.at("WalkingRight").get();
+					anim.state = AnimationState{};
 				}
 				break;
 			case sf::Keyboard::Scancode::A:
 				playerInput.left = true;
 				if (playerState.state != "Walking Left") {
 					playerState.state = "Walking Left";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingLeft")));
+					anim.prototype = mAssets.mAnimationMap.at("WalkingLeft").get();
+					anim.state = AnimationState{};
 				}
 				break;
 			case sf::Keyboard::Scancode::W:
 				playerInput.up = true;
 				if (playerState.state != "Walking Up") {
 					playerState.state = "Walking Up";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingUp")));
+					anim.prototype = mAssets.mAnimationMap.at("WalkingUp").get();
+					anim.state = AnimationState{};
 				}
 				break;
 			case sf::Keyboard::Scancode::S:
 				playerInput.down = true;
 				if (playerState.state != "Walking Down") {
 					playerState.state = "Walking Down";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingDown")));
+					anim.prototype = mAssets.mAnimationMap.at("WalkingDown").get();
+					anim.state = AnimationState{};
 				}
 				break;
 			case sf::Keyboard::Scancode::Space:
 				setPaused(!mPaused);
 				break;
-			//case sf::Keyboard::Scancode::Grave:
-			//	mShow_imgui = !mShow_imgui;
-			//	break;
 			default:
 				break;
 			}
@@ -231,55 +248,56 @@ void GameEngine::sUserInput()
 			switch (keyReleased->scancode)
 			{
 			case sf::Keyboard::Scancode::D:
-				playerInput.right = false;
+				playerInput.right = false; 
 				break;
-			case sf::Keyboard::Scancode::A:
+			case sf::Keyboard::Scancode::A: 
 				playerInput.left = false;
 				break;
 			case sf::Keyboard::Scancode::W:
-				playerInput.up = false;
+				playerInput.up = false; 
 				break;
-			case sf::Keyboard::Scancode::S:
-				playerInput.down = false;
+			case sf::Keyboard::Scancode::S: 
+				playerInput.down = false; 
 				break;
-			default:
-				break;
+			default: break;
 			}
 
 			if (playerInput.right) {
 				playerState.state = "Walking Right";
-				player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingRight")));
+				anim.prototype = mAssets.mAnimationMap.at("WalkingRight").get();
 			}
 			else if (playerInput.left) {
 				playerState.state = "Walking Left";
-				player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingLeft")));
+				anim.prototype = mAssets.mAnimationMap.at("WalkingLeft").get();
 			}
 			else if (playerInput.up) {
 				playerState.state = "Walking Up";
-				player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingUp")));
+				anim.prototype = mAssets.mAnimationMap.at("WalkingUp").get();
 			}
 			else if (playerInput.down) {
 				playerState.state = "Walking Down";
-				player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("WalkingDown")));
+				anim.prototype = mAssets.mAnimationMap.at("WalkingDown").get();
 			}
 			else {
 				if (playerState.state == "Walking Right") {
 					playerState.state = "Standing Right";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("StandingRight")));
+					anim.prototype = mAssets.mAnimationMap.at("StandingRight").get();
 				}
 				else if (playerState.state == "Walking Left") {
 					playerState.state = "Standing Left";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("StandingLeft")));
+					anim.prototype = mAssets.mAnimationMap.at("StandingLeft").get();
 				}
 				else if (playerState.state == "Walking Up") {
 					playerState.state = "Standing Up";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("StandingUp")));
+					anim.prototype = mAssets.mAnimationMap.at("StandingUp").get();
 				}
 				else if (playerState.state == "Walking Down") {
 					playerState.state = "Standing Down";
-					player()->add<CAnimation>(new Animation(*mAssets.mAnimationMap.at("StandingDown")));
+					anim.prototype = mAssets.mAnimationMap.at("StandingDown").get();
 				}
 			}
+
+			anim.state = AnimationState{};
 		}
 	}
 }

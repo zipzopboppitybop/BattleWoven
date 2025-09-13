@@ -137,36 +137,16 @@ public:
 	CAbility() = default;
 };
 
-class CAnimation : public Component
-{
+struct AnimationState {
+	int currentFrame = 0;
+	float elapsed = 0.f;
+};
+
+class CAnimation : public Component {
 public:
-	Animation* animation = nullptr;
+	Animation* prototype = nullptr; 
+	AnimationState state;
 
 	CAnimation() = default;
-
-	CAnimation(Animation* anim)
-		: animation(anim) {
-	}
-
-	~CAnimation() {
-		delete animation;
-		animation = nullptr;
-	}
-
-	CAnimation(const CAnimation&) = delete;
-	CAnimation& operator=(const CAnimation&) = delete;
-
-	CAnimation(CAnimation&& other) noexcept
-		: animation(other.animation) {
-		other.animation = nullptr;
-	}
-
-	CAnimation& operator=(CAnimation&& other) noexcept {
-		if (this != &other) {
-			delete animation;
-			animation = other.animation;
-			other.animation = nullptr;
-		}
-		return *this;
-	}
+	CAnimation(Animation* animPrototype) : prototype(animPrototype) {}
 };
