@@ -22,7 +22,6 @@ protected:
 	bool mShowImgui = true;
 	int mCurrentFrame = 0;;
 
-
 	void init(const std::string& path);
 	void sRender();
 	void spawnPlayer();

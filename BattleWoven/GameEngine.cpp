@@ -5,16 +5,6 @@ GameEngine::GameEngine(const std::string& path)
 	init(path);
 }
 
-std::shared_ptr<Entity> GameEngine::player()
-{
-	auto& players = mEntities.getEntities("player");
-	if (!players.empty())
-	{
-		return players.front();
-	}
-	return nullptr;
-}
-
 void GameEngine::init(const std::string& path)
 {
 	mAssets.loadFromFile(path);
@@ -403,6 +393,15 @@ void GameEngine::sGui()
 	}
 }
 
+std::shared_ptr<Entity> GameEngine::player()
+{
+	auto& players = mEntities.getEntities("player");
+	if (!players.empty())
+	{
+		return players.front();
+	}
+	return nullptr;
+}
 
 sf::RenderWindow& GameEngine::window()
 {
