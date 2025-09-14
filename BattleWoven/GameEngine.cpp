@@ -19,8 +19,33 @@ void GameEngine::init(const std::string& path)
 	ImGui::GetStyle().ScaleAllSizes(2.0f);
 	ImGui::GetIO().FontGlobalScale = 2.0f;
 
+	loadLevel("../BattleWoven/Assets/Levels/Level1.txt");
 	spawnPlayer();
 }	
+
+void GameEngine::loadLevel(const std::string& path)
+{
+	std::ifstream config(path);
+	std::string temp;
+
+	if (!config.is_open()) {
+		std::cerr << "Error opening file!" << std::endl;
+	}
+
+	while (config >> temp)
+	{
+		if (temp == "Tile")
+		{
+			std::string tileName, animationName;
+
+			config >> tileName >> animationName;
+
+			auto tile = mEntities.addEntity(tileName);
+			tile->add<CAnimation>(mAssets.mAnimationMap.at(animationName).get());
+			tile->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(0, 0), Vec2f(3.0f, 3.0f), 1);
+		}
+	}
+}
 
 void GameEngine::setPaused(bool paused)
 {

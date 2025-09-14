@@ -30,6 +30,7 @@ protected:
 	void sMovement();
 	void sGui();
 	void sAnimation(float deltaTime);
+	void loadLevel(const std::string& path);
 
 	std::shared_ptr<Entity> player();
 public:
