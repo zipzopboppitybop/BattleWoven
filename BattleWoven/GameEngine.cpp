@@ -27,8 +27,13 @@ std::shared_ptr<Entity> GameEngine::sSpawnTile(int row, int col, const std::stri
 {
 	auto tile = mEntities.addEntity("tile");
 	auto* proto = mAssets.mAnimationMap.at(animationName).get(); 
+	auto size = proto->frameSize();
+
+	Vec2f baseSize(32.0f, 32.0f);
+	Vec2f pos(col * baseSize.x * 2.0f, row * baseSize.y * 2.0f);
+
 	tile->add<CAnimation>(proto);
-	tile->add<CTransform>(Vec2f(col * proto->frameSize().x * 3.0f, row * proto->frameSize().y * 3.0f), Vec2f(0, 0), Vec2f(3.0f, 3.0f), 1);
+	tile->add<CTransform>(pos, Vec2f(0, 0), Vec2f(2.0f, 2.0f), 1);
 
 	return tile;
 }
@@ -37,7 +42,8 @@ void GameEngine::loadLevel(const std::string& path)
 {
 	std::unordered_map<char, std::string> tileMap = {
 	{ '#', "WaterTile" },
-	{ 'G', "GrassTile" }
+	{ 'G', "GrassTile" },
+	{ 'S', "ShopTile" }
 	};
 
 	std::ifstream file(path);
@@ -68,7 +74,7 @@ void GameEngine::spawnPlayer()
 	auto player = mEntities.addEntity("player");
 	auto* proto = mAssets.mAnimationMap.at("StandingDown").get();
 	player->add<CAnimation>(proto);
-	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(5,5), Vec2f(3.0f, 3.0f), 1);
+	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(5,5), Vec2f(2.0f, 2.0f), 1);
 	player->add<CInput>();
 	player->add<CAbility>();
 	player->add<CHealth>(100);

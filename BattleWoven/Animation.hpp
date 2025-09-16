@@ -25,14 +25,14 @@ public:
         return mFrameSize;
     }
 
-    int frameCount() const 
-    { 
-        return mFrameCount; 
+    int frameCount() const
+    {
+        return mFrameCount;
     }
 
-    float frameTime() const 
-    { 
-        return mFrameTime; 
+    float frameTime() const
+    {
+        return mFrameTime;
     }
 
     void setFrame(int index) {
@@ -42,13 +42,13 @@ public:
         mSprite.setTextureRect(sf::IntRect({ left, top }, { (int)mFrameSize.x, (int)mFrameSize.y }));
     }
 
-    sf::Sprite& sprite() 
-    { 
-        return mSprite; 
+    sf::Sprite& sprite()
+    {
+        return mSprite;
     }
 
-    const std::string& name() const 
-    { 
-        return mName; 
+    const std::string& name() const
+    {
+        return mName;
     }
 };
