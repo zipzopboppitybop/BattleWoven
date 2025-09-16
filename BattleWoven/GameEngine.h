@@ -30,6 +30,7 @@ protected:
 	void sMovement();
 	void sGui();
 	void sAnimation(float deltaTime);
+	std::shared_ptr<Entity> sSpawnTile(int row, int col, const std::string& animationName);
 	void loadLevel(const std::string& path);
 
 	std::shared_ptr<Entity> player();

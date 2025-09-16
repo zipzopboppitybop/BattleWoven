@@ -11,4 +11,5 @@ Animation WalkingLeft Player 64 576 64 64 8 .15
 Animation WalkingDown Player 64 640 64 64 8 .15
 Animation WalkingRight Player 64 704 64 64 8 .15
 Animation GrassTile Castle 0 352 32 32 1 0
+Animation WaterTile Castle 0 384 32 32 1 0
 Ability Fireball 100 1 3

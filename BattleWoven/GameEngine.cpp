@@ -23,27 +23,38 @@ void GameEngine::init(const std::string& path)
 	spawnPlayer();
 }	
 
+std::shared_ptr<Entity> GameEngine::sSpawnTile(int row, int col, const std::string& animationName)
+{
+	auto tile = mEntities.addEntity("tile");
+	auto* proto = mAssets.mAnimationMap.at(animationName).get(); 
+	tile->add<CAnimation>(proto);
+	tile->add<CTransform>(Vec2f(col * proto->frameSize().x * 3.0f, row * proto->frameSize().y * 3.0f), Vec2f(0, 0), Vec2f(3.0f, 3.0f), 1);
+
+	return tile;
+}
+
 void GameEngine::loadLevel(const std::string& path)
 {
-	std::ifstream config(path);
-	std::string temp;
+	std::unordered_map<char, std::string> tileMap = {
+	{ '#', "WaterTile" },
+	{ 'G', "GrassTile" }
+	};
 
-	if (!config.is_open()) {
-		std::cerr << "Error opening file!" << std::endl;
+	std::ifstream file(path);
+	std::string line;
+	int row = 0;
+
+	if (!file.is_open()) {
+		throw std::runtime_error("Failed to load level: " + path);
 	}
 
-	while (config >> temp)
-	{
-		if (temp == "Tile")
-		{
-			std::string tileName, animationName;
-
-			config >> tileName >> animationName;
-
-			auto tile = mEntities.addEntity(tileName);
-			tile->add<CAnimation>(mAssets.mAnimationMap.at(animationName).get());
-			tile->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(0, 0), Vec2f(3.0f, 3.0f), 1);
+	while (std::getline(file, line)) {
+		for (int col = 0; col < line.size(); col++) {
+			if (auto it = tileMap.find(line[col]); it != tileMap.end()) {
+				sSpawnTile(row, col, it->second);
+			}
 		}
+		row++;
 	}
 }
 
@@ -55,7 +66,8 @@ void GameEngine::setPaused(bool paused)
 void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
-	player->add<CAnimation>(mAssets.mAnimationMap.at("StandingDown").get());
+	auto* proto = mAssets.mAnimationMap.at("StandingDown").get();
+	player->add<CAnimation>(proto);
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(5,5), Vec2f(3.0f, 3.0f), 1);
 	player->add<CInput>();
 	player->add<CAbility>();
@@ -379,24 +391,36 @@ void GameEngine::sGui()
 					{
 						if (player())
 						{
-							auto playerColor = player()->get<CShape>().circle.getOutlineColor();
-							auto playerPos = player()->get<CTransform>().pos;
+							auto& sprite = player()->get<CAnimation>().prototype->sprite();
+							auto& pos = player()->get<CTransform>().pos;
 							int id = player()->id();
 							const std::string& tag = player()->tag();
-							float x = playerPos.x, y = playerPos.y;
+							const sf::Texture& tex = sprite.getTexture();
+							float x = pos.x, y = pos.y;
+							float texW = static_cast<float>(tex.getSize().x);
+							float texH = static_cast<float>(tex.getSize().y);
+
+							ImVec2 buttonSize(64, 64 );
+							ImVec2 uv0(0.0f / texW, 640.0f / texH);
+							ImVec2 uv1(64.0f / texW, 704.0f / texH); 
+							ImVec4 tint_color(1, 1, 1, 1); 
+							ImVec4 bg_color(0, 0, 0, 0); 
 
 							ImGui::PushID(id);
-							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 1.0f));
-							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 0.8f));
-							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(playerColor.r / 255.0f, playerColor.g / 255.0f, playerColor.b / 255.0f, 0.6f));
-							ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
 
-							if (ImGui::Button("D", ImVec2(36, 36)))
+							if (ImGui::ImageButton("PlayerButton", sprite.getTexture().getNativeHandle(), buttonSize, uv0, uv1, bg_color, tint_color))
 							{
 								player()->destroy();
 							}
 
-							ImGui::PopStyleColor(4);
+							bool hovered = ImGui::IsItemHovered();
+							if (hovered) {
+								sprite.setColor(sf::Color(255, 255, 100));
+							}
+							else {
+								sprite.setColor(sf::Color(255, 255, 255)); 
+							}
+
 							ImGui::SameLine();
 							ImGui::Text("%d %s (%.0f, %.0f)", id, tag.c_str(), x, y);
 							ImGui::PopID();

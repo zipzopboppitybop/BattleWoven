@@ -20,6 +20,11 @@ public:
         mSprite.setTextureRect(sf::IntRect({ (int)mPos.x, (int)mPos.y }, { (int)mFrameSize.x, (int)mFrameSize.y }));
     }
 
+    Vec2f frameSize() const
+    {
+        return mFrameSize;
+    }
+
     int frameCount() const 
     { 
         return mFrameCount; 
