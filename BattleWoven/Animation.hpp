@@ -37,8 +37,12 @@ public:
 
     void setFrame(int index) {
         if (index < 0 || index >= mFrameCount) return;
-        int left = (int)mPos.x + index * (int)mFrameSize.x;
-        int top = (int)mPos.y;
+
+        int framesPerRow = (int)(mSprite.getTexture().getSize().x / mFrameSize.x);
+
+        int left = (int)mPos.x + (index % framesPerRow) * (int)mFrameSize.x;
+        int top = (int)mPos.y + (index / framesPerRow) * (int)mFrameSize.y;
+
         mSprite.setTextureRect(sf::IntRect({ left, top }, { (int)mFrameSize.x, (int)mFrameSize.y }));
     }
 

@@ -2,7 +2,7 @@
 
 int main() 
 {
-    GameEngine g("config.txt");
+    GameEngine g("config.JSON");
     g.run();
 
     return 0;

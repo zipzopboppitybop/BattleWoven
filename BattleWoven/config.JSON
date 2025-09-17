@@ -1,0 +1,116 @@
+{
+    "window": {
+        "width": 1920,
+        "height": 1080
+    },
+
+    "font": {
+        "file": "fonts/Roboto-Regular.ttf",
+        "size": 18,
+        "color": [ 255, 255, 255 ]
+    },
+
+    "textures": {
+        "Player": "../BattleWoven/Assets/Textures/Player.png",
+        "Castle": "../BattleWoven/Assets/Textures/Castle.png",
+        "FireLion": "../BattleWoven/Assets/Textures/FireLion.png"
+    },
+
+    "animations": {
+        "StandingUp": {
+            "texture": "Player",
+            "pos": [ 0, 512 ],
+            "size": [ 64, 64 ],
+            "frames": 1,
+            "time": 0
+        },
+        "StandingLeft": {
+            "texture": "Player",
+            "pos": [ 0, 576 ],
+            "size": [ 64, 64 ],
+            "frames": 1,
+            "time": 0
+        },
+        "StandingDown": {
+            "texture": "Player",
+            "pos": [ 0, 640 ],
+            "size": [ 64, 64 ],
+            "frames": 1,
+            "time": 0
+        },
+        "StandingRight": {
+            "texture": "Player",
+            "pos": [ 0, 704 ],
+            "size": [ 64, 64 ],
+            "frames": 1,
+            "time": 0
+        },
+
+        "WalkingUp": {
+            "texture": "Player",
+            "pos": [ 64, 512 ],
+            "size": [ 64, 64 ],
+            "frames": 8,
+            "time": 0.15
+        },
+        "WalkingLeft": {
+            "texture": "Player",
+            "pos": [ 64, 576 ],
+            "size": [ 64, 64 ],
+            "frames": 8,
+            "time": 0.15
+        },
+        "WalkingDown": {
+            "texture": "Player",
+            "pos": [ 64, 640 ],
+            "size": [ 64, 64 ],
+            "frames": 8,
+            "time": 0.15
+        },
+        "WalkingRight": {
+            "texture": "Player",
+            "pos": [ 64, 704 ],
+            "size": [ 64, 64 ],
+            "frames": 8,
+            "time": 0.15
+        },
+
+        "GrassTile": {
+            "texture": "Castle",
+            "pos": [ 0, 352 ],
+            "size": [ 32, 32 ],
+            "frames": 1,
+            "time": 0
+        },
+        "WaterTile": {
+            "texture": "Castle",
+            "pos": [ 0, 384 ],
+            "size": [ 32, 32 ],
+            "frames": 1,
+            "time": 0
+        },
+        "ShopTile": {
+            "texture": "Castle",
+            "pos": [ 0, 288 ],
+            "size": [ 64, 64 ],
+            "frames": 1,
+            "time": 0
+        },
+
+        "FireLion": {
+            "texture": "FireLion",
+            "pos": [ 0, 0 ],
+            "size": [ 64, 64 ],
+            "frames": 16,
+            "time": 0.1
+        }
+    },
+
+    "abilities": {
+        "Fireball": {
+            "damage": 100,
+            "level": 1,
+            "cooldown": 3
+        }
+    }
+}

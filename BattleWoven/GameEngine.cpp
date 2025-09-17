@@ -80,6 +80,11 @@ void GameEngine::spawnPlayer()
 	player->add<CHealth>(100);
 	player->add<CState>("Standing Down");
 	player->get<CAbility>().abilities.push_back(mAssets.mAbilitiesMap["Fireball"]);
+
+	auto fireBall = mEntities.addEntity("Ability:Fireball");
+	auto* proto2 = mAssets.mAnimationMap.at("FireLion").get();
+	fireBall->add<CAnimation>(proto2);
+	fireBall->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(0, 0), Vec2f(3.0f, 3.0f), 1);
 }
 
 void GameEngine::run()
