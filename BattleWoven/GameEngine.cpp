@@ -23,7 +23,7 @@ void GameEngine::init(const std::string& path)
 	spawnPlayer();
 }	
 
-std::shared_ptr<Entity> GameEngine::sSpawnTile(int row, int col, const std::string& animationName)
+std::shared_ptr<Entity> GameEngine::sSpawnTile(int row, int col, const std::string& animationName, bool isObstacle)
 {
 	auto tile = mEntities.addEntity("tile");
 	auto* proto = mAssets.mAnimationMap.at(animationName).get(); 
@@ -35,6 +35,13 @@ std::shared_ptr<Entity> GameEngine::sSpawnTile(int row, int col, const std::stri
 	tile->add<CAnimation>(proto);
 	tile->add<CTransform>(pos, Vec2f(0, 0), Vec2f(2.0f, 2.0f), 1);
 
+	if (isObstacle)
+	{
+		auto tileScale = tile->get<CTransform>().scale;
+		Vec2f boxSize(size.x * tileScale.x, size.y * tileScale.y);
+		tile->add<CBoundingBox>(Vec2f(64,64));
+	}
+
 	return tile;
 }
 
@@ -42,7 +49,10 @@ void GameEngine::loadLevel(const std::string& path)
 {
 	std::unordered_map<char, std::string> tileMap = {
 	{ '#', "WaterTile" },
-	{ 'G', "GrassTile" },
+	{ 'G', "GrassTile" }
+	};
+
+	std::unordered_map<char, std::string> obstacleMap = {
 	{ 'S', "ShopTile" }
 	};
 
@@ -57,10 +67,38 @@ void GameEngine::loadLevel(const std::string& path)
 	while (std::getline(file, line)) {
 		for (int col = 0; col < line.size(); col++) {
 			if (auto it = tileMap.find(line[col]); it != tileMap.end()) {
-				sSpawnTile(row, col, it->second);
+				sSpawnTile(row, col, it->second, 0);
+			}
+
+			if (auto it = obstacleMap.find(line[col]); it != obstacleMap.end()) {
+				sSpawnTile(row, col, it->second, 1);
 			}
 		}
+
 		row++;
+	}
+}
+
+void GameEngine::sCollision()
+{
+	auto playerPos = player()->get<CTransform>().pos;
+	auto playerSize = player()->get<CBoundingBox>().size;
+
+	for (auto& tile : mEntities.getEntities("tile"))
+	{
+		if (tile->has<CBoundingBox>())
+		{
+			auto tilePos = tile->get<CTransform>().pos;
+			auto tileSize = tile->get<CBoundingBox>().size;
+
+			if (playerPos.x < tilePos.x + tileSize.x &&
+				playerPos.x + playerSize.x > tilePos.x &&
+				playerPos.y < tilePos.y + tileSize.y &&
+				playerPos.y + playerSize.y > tilePos.y)
+			{
+				std::cout << "Collision Detected" << std::endl;
+			}
+		}
 	}
 }
 
@@ -73,12 +111,23 @@ void GameEngine::spawnPlayer()
 {
 	auto player = mEntities.addEntity("player");
 	auto* proto = mAssets.mAnimationMap.at("StandingDown").get();
+
 	player->add<CAnimation>(proto);
+
 	player->add<CTransform>(Vec2f(mWindow.getSize().x / 2, mWindow.getSize().y / 2), Vec2f(5,5), Vec2f(2.0f, 2.0f), 1);
+
+	auto playerScale = player->get<CTransform>().scale;
+	Vec2f boxSize(proto->frameSize().x * playerScale.x, proto->frameSize().y * playerScale.y);
+	player->add<CBoundingBox>(boxSize);
+
 	player->add<CInput>();
+
 	player->add<CAbility>();
+
 	player->add<CHealth>(100);
+
 	player->add<CState>("Standing Down");
+
 	player->get<CAbility>().abilities.push_back(mAssets.mAbilitiesMap["Fireball"]);
 
 	auto fireBall = mEntities.addEntity("Ability:Fireball");
@@ -102,6 +151,7 @@ void GameEngine::run()
 		sAnimation(deltaTime);
 		sRender();
 		sGui();
+		sCollision();
 
 		mCurrentFrame++;
 

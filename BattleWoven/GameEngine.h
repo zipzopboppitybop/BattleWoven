@@ -28,10 +28,11 @@ protected:
 	void sUserInput();
 	void setPaused(bool paused);
 	void sMovement();
+	void sCollision();
 	void sGui();
 	void sAnimation(float deltaTime);
 	void loadLevel(const std::string& path);
-	std::shared_ptr<Entity> sSpawnTile(int row, int col, const std::string& animationName);
+	std::shared_ptr<Entity> sSpawnTile(int row, int col, const std::string& animationName, bool isObstacle);
 
 	std::shared_ptr<Entity> player();
 public:
