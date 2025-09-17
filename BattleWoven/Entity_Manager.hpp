@@ -38,6 +38,7 @@ public:
 			mEntities.push_back(entity);
 			mEntityMap[entity->mTag].push_back(entity);
 		}
+
 		mEntitiesToAdd.clear();
 
 		removeDeadEntities(mEntities);
